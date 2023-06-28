@@ -1,0 +1,9 @@
+djangorestframework
+psycopg2-binary
+requests
+python-dotenv
+django-redis
+redis
+celery
+base58
+
