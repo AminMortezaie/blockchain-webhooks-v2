@@ -3,6 +3,7 @@ from rest_framework import status
 from trc20webhook.models import TransactionHistory, Wallet, Network, Coin, Block
 from trc20webhook.services.get_blocks_operators import get_request_response, get_int_number_from_hex
 from trc20webhook.services.get_blocks_links import link_provider, payload
+from trc20webhook.services.wallets_hashmap import WalletsHashMap
 
 
 def create_transaction(
@@ -51,6 +52,7 @@ def get_blocks(network: Network) -> dict:
     blocks_data = get_request_response(url, payload_data)
 
     return blocks_data
+
 
 
 
