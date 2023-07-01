@@ -40,17 +40,20 @@ class TRONDataHandler(BlocksDataHandler):
 
     def _wrap_inside_contract_data(self, tx):
         data = tx['data']
-        if len(data) == self.KNOWN_SMART_CONTRACTS_TX_DATA_LEN:
-            sender_address = self._convert_hex_to_base58_address(tx['owner_address'])
-            receiver_address = self._convert_hex_to_base58_address("41" + data[32:72])
-            amount = self._convert_hex_number_to_int(data[96:])
-            return sender_address, receiver_address, amount
+        try:
+            if len(data) == self.KNOWN_SMART_CONTRACTS_TX_DATA_LEN:
+                sender_address = self._convert_hex_to_base58_address(tx['owner_address'])
+                receiver_address = self._convert_hex_to_base58_address("41" + data[32:72])
+                amount = self._convert_hex_number_to_int(data[96:])
+                return sender_address, receiver_address, amount
 
-        elif len(data) == self.UNKNOWN_SMART_CONTRACTS_TX_DATA_LEN:
-            sender_address = self._convert_hex_to_base58_address("41" + data[32:72])
-            receiver_address = self._convert_hex_to_base58_address("41" + data[96:136])
-            amount = self._convert_hex_number_to_int(data[136:])
-            return sender_address, receiver_address, amount
+            elif len(data) == self.UNKNOWN_SMART_CONTRACTS_TX_DATA_LEN:
+                sender_address = self._convert_hex_to_base58_address("41" + data[32:72])
+                receiver_address = self._convert_hex_to_base58_address("41" + data[96:136])
+                amount = self._convert_hex_number_to_int(data[136:])
+                return sender_address, receiver_address, amount
+        except Exception as e:
+            print(e)
 
     def _tx_wrapper(self, tx, type_):
         match type_:
@@ -58,18 +61,23 @@ class TRONDataHandler(BlocksDataHandler):
             case "TransferContract":
                 contract_address = ""
                 amount = tx['amount']
-                sender_address = tx['owner_address']
-                receiver_address = tx['to_address']
+                sender_address = self._convert_hex_to_base58_address(tx['owner_address'])
+                receiver_address = self._convert_hex_to_base58_address(tx['to_address'])
                 return sender_address, receiver_address, amount, contract_address
 
             case "TriggerSmartContract":
                 contract_address = self._convert_hex_to_base58_address(tx['contract_address'])
-                data = tx['data']
-                sender_address, receiver_address, amount = self._wrap_inside_contract_data(tx)
-                return sender_address, receiver_address, amount, contract_address
+                try:
+                    sender_address, receiver_address, amount = self._wrap_inside_contract_data(tx)
+                    return sender_address, receiver_address, amount, contract_address
+                except:
+                    pass
 
             # Trc10 transactions
-            case "TransferAssetContract":
+            # case "TransferAssetContract":
+            #     pass
+
+            case _:
                 pass
 
     def get_blocks_wallets_data(self, blocks_data) -> dict:
@@ -77,7 +85,8 @@ class TRONDataHandler(BlocksDataHandler):
             for tx in block_data['transactions']:
                 type_ = tx['raw_data']['contract'][0]['type']
                 transaction = tx['raw_data']['contract'][0]['parameter']['value']
-                self._tx_wrapper(transaction, type_)
+                if self._tx_wrapper(transaction, type_):
+                    print(self._tx_wrapper(transaction, type_))
 
 
 f = open("./test1.json")
