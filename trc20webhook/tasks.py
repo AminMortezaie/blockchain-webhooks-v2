@@ -1,4 +1,4 @@
-from trc20webhook.services.wallets_hashmap import WalletsHashMap
+from trc20webhook.services.data_hashmap import DataHashMap
 
 
 # every 5 seconds update wallets_hashmap

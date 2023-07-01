@@ -1,9 +1,18 @@
 from trc20webhook.models import Wallet, Network, Coin, Block
 
 
-def get_wallet(wallet_address: str, network: Network) -> Wallet | None:
-    try:
+def _get_wallet(wallet_address: str, network: Network, eth_address: str) -> Wallet | None:
+    if network.symbol == "trc20":
+        wallet_obj = Wallet.objects.get(network=network, eth_address=eth_address)
+    else:
         wallet_obj = Wallet.objects.get(address=wallet_address, network=network)
+
+    return wallet_obj
+
+
+def get_wallet(wallet_address: str, network: Network, eth_address: str) -> Wallet | None:
+    try:
+        wallet_obj = _get_wallet(wallet_address, network, eth_address)
         return wallet_obj
     except Wallet.DoesNotExist:
         pass
@@ -34,6 +43,4 @@ def get_block(network: Network) -> Block | None:
         return block_obj
     except Block.DoesNotExist:
         raise "There is no block for this network."
-
-
 
