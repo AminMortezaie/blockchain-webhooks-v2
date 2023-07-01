@@ -36,24 +36,7 @@ class Network(BaseModel):
 
 
 class Wallet(BaseModel):
-    def convert_tron_address_to_eth(self):
-        decoded_bytes = base58.b58decode(self.address)
-        hex_str = decoded_bytes.hex()
-        return hex_str[:-8]
-
-    def tron_validation(self):
-        if self.network.symbol == "trc20":
-            return True
-        else:
-            return False
-
-    def save(self):
-        if self.tron_validation():
-            self.eth_address = self.convert_tron_address_to_eth()
-        super().save()
-
     address = models.CharField(max_length=250)
-    eth_address = models.CharField(max_length=250, blank=True, null=True)
     network = models.ForeignKey(Network, on_delete=models.CASCADE)
 
 
