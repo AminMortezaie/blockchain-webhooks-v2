@@ -44,3 +44,10 @@ def get_block(network: Network) -> Block | None:
     except Block.DoesNotExist:
         raise "There is no block for this network."
 
+
+def check_contract_address_is_valid(contract_address: str, network_symbol: str):
+    network = get_network(network_symbol)
+    if Coin.objects.get(network=network, contract_address=contract_address):
+        return True
+    else:
+        return False

@@ -28,7 +28,7 @@ def get_last_block_num_from_db(network: Network):
 
 def get_last_block_num_from_getblock(network: Network):
     network_name = network.name
-    key = network_name + "last-block-num"
+    key = network_name + "-last-block-num"
 
     url = link_provider[key]
     payload_data = payload[key]
@@ -39,7 +39,7 @@ def get_last_block_num_from_getblock(network: Network):
 
 def get_blocks(network: Network) -> dict:
     network_name = network.name
-    key = network_name + "start-to-end"
+    key = network_name + "-start-to-end"
     url = link_provider[key]
 
     start_number = get_last_block_num_from_db(network)

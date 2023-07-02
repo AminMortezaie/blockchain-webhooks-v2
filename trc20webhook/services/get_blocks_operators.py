@@ -24,8 +24,14 @@ def convert_timestamp(timestamp: str) -> datetime:
     return datetime.date.fromtimestamp(int(timestamp))
 
 
-def get_int_number_from_hex(hex_number: str) -> int:
+def convert_hex_number_to_int(hex_number: str) -> int:
     return int(hex_number, 16)
+
+
+def add_value_to_dict_values_by_key(key: str, hashmap: dict, value: str | list | dict) -> None:
+    values = hashmap.get(key, [])
+    values.append(value)
+    hashmap[key] = values
 
 
 

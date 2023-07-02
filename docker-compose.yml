@@ -7,7 +7,7 @@ services:
       - bash
       - -c
       - |
-        /code/manage.py migrate && python /code/manage.py runserver 0.0.0.0:8000
+        /code/manage.py makemigrations && /code/manage.py migrate && python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
@@ -16,6 +16,8 @@ services:
       - db
     networks:
       - my-network
+    restart:
+      unless-stopped
 
 
   db:
