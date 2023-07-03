@@ -1,18 +1,10 @@
-from trc20webhook.models import Wallet, Network, Coin, Block
+from trc20webhook.models import Wallet, Network, Coin, Block, TransactionHistory
+from datetime import datetime
 
 
-def _get_wallet(wallet_address: str, network: Network, eth_address: str) -> Wallet | None:
-    if network.symbol == "trc20":
-        wallet_obj = Wallet.objects.get(network=network, eth_address=eth_address)
-    else:
-        wallet_obj = Wallet.objects.get(address=wallet_address, network=network)
-
-    return wallet_obj
-
-
-def get_wallet(wallet_address: str, network: Network, eth_address: str) -> Wallet | None:
+def get_wallet(wallet_address: str, network: Network) -> Wallet | None:
     try:
-        wallet_obj = _get_wallet(wallet_address, network, eth_address)
+        wallet_obj = Wallet.objects.get(address=wallet_address, network=network)
         return wallet_obj
     except Wallet.DoesNotExist:
         pass
@@ -54,3 +46,18 @@ def check_contract_address_is_valid(contract_address: str, network_symbol: str):
     except Coin.DoesNotExist:
         return False
 
+
+def create_transaction(network_symbol: str, wallet_address: str, tx_hash: str, amount: str,
+                       contract_address: str, timestamp: str, tx_type: str):
+    network = get_network(network_symbol)
+    coin = get_coin(network, contract_address)
+    timestamp = datetime.fromtimestamp(int(timestamp))
+    wallet = get_wallet(wallet_address=wallet_address, network=network)
+    amount = float(amount) / float(pow(10, int(coin.decimals)))
+
+    try:
+        TransactionHistory.objects.create(transaction_hash=tx_hash, amount=amount,
+                                          coin=coin, network=network, wallet=wallet,
+                                          transaction_type=tx_type, timestamp=timestamp)
+    except Exception as e:
+        print(e)

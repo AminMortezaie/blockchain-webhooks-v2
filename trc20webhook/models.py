@@ -64,7 +64,7 @@ class TransactionHistory(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
     network = models.ForeignKey(Network, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(default=datetime.now)
+    timestamp = models.DateTimeField(default='')
     transaction_type = models.CharField(default="withdrawal", max_length=10)
     created_at = models.DateTimeField(auto_now=True)
 

@@ -1,24 +1,9 @@
 from trc20webhook.services.utils import get_wallet, get_network, get_coin, get_block
 from rest_framework import status
 from trc20webhook.models import TransactionHistory, Wallet, Network, Coin, Block
-from trc20webhook.services.get_blocks_operators import get_request_response, get_int_number_from_hex
+from trc20webhook.services.get_blocks_operators import get_request_response, \
+    convert_hex_number_to_int, post_request_response
 from trc20webhook.services.get_blocks_links import link_provider, payload
-from trc20webhook.services.data_hashmap import WalletsHashMap
-
-
-def create_transaction(
-        tx_hash: str,
-        amount: int,
-        coin: Coin,
-        wallet: Wallet,
-        network: Network,
-        tx_type: str) -> TransactionHistory:
-
-    tx_type = 'deposit' if tx_type == 'incoming' else 'withdrawal'
-    transaction = TransactionHistory.objects.create(transaction_hash=tx_hash, amount=amount,
-                                                    coin=coin, network=network, wallet=wallet,
-                                                    transaction_type=tx_type)
-    return transaction
 
 
 def get_last_block_num_from_db(network: Network):
@@ -27,18 +12,18 @@ def get_last_block_num_from_db(network: Network):
 
 
 def get_last_block_num_from_getblock(network: Network):
-    network_name = network.name
+    network_name = network.symbol
     key = network_name + "-last-block-num"
 
     url = link_provider[key]
     payload_data = payload[key]
 
-    hex_result = get_request_response(url, payload=payload_data)['result']
-    return get_int_number_from_hex(hex_result)
+    hex_result = post_request_response(url, payload=payload_data)['result']
+    return convert_hex_number_to_int(hex_result)
 
 
 def get_blocks(network: Network) -> dict:
-    network_name = network.name
+    network_name = network.symbol
     key = network_name + "-start-to-end"
     url = link_provider[key]
 
@@ -49,9 +34,21 @@ def get_blocks(network: Network) -> dict:
     payload_data['startNum'] = start_number
     payload_data['endNum'] = end_number
 
-    blocks_data = get_request_response(url, payload_data)
+    blocks_data = post_request_response(url, payload_data)
 
     return blocks_data
+
+
+def get_confirmation_state(network_symbol: str, tx_hash: str) -> dict:
+    key = network_symbol + "-check-confirmation"
+    url = link_provider[key]
+    url = url + tx_hash
+    tx_data = get_request_response(url)
+    return tx_data
+
+
+
+
 
 
 
