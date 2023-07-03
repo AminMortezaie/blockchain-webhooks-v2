@@ -1,18 +1,10 @@
 from webhook.services.singleton_pattern import SingletonMeta
+from trc20webhook.services.get_blocks_operators import add_value_to_dict_values_by_key
 
 
 class DataHashMap(metaclass=SingletonMeta):
     _wallets_hashmap = {}
-    _get_block_wallets_data = {}
     _waiting_tx_queue = {}
-
-    @property
-    def get_block_wallets_data(self):
-        return self._get_block_wallets_data
-
-    @get_block_wallets_data.setter
-    def get_block_wallets_data(self, new_get_block_wallets_data):
-        self._get_block_wallets_data = new_get_block_wallets_data
 
     @property
     def wallets_hashmap(self):
@@ -24,9 +16,11 @@ class DataHashMap(metaclass=SingletonMeta):
 
     @property
     def waiting_tx_queue(self):
-        return self._wallets_hashmap
+        return self._waiting_tx_queue
 
     @waiting_tx_queue.setter
-    def waiting_tx_queue(self, new_waiting_tx_queue):
-        self._waiting_tx_queue = new_waiting_tx_queue
+    def waiting_tx_queue(self, new_waiting_queue):
+        self._waiting_tx_queue = new_waiting_queue
 
+    def waiting_tx_queue_setter_by_value(self, key, value):
+        add_value_to_dict_values_by_key(key, self._waiting_tx_queue, value)

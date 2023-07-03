@@ -5,10 +5,14 @@ import json
 from abc import abstractmethod
 import base58
 
-_wallets = {'TAmSperixPEYyEVozADE6unuKuK44QSood': True, 'TF4szfVCVQCC62L7G4M5yMA2nBRTGNko1r': True, 'TWSTYpRKBzSZggfcesAQDJv6o2RMgVAvfi': True, 'TPqRH6aUK7t4aCtky2Y1pe7qkU7oWCYwSL': True}
+_wallets = {'TAmSperixPEYyEVozADE6unuKuK44QSood_trc20': True, 'TF4szfVCVQCC62L7G4M5yMA2nBRTGNko1r_trc20': True,
+            'TWSTYpRKBzSZggfcesAQDJv6o2RMgVAvfi_trc20': True, 'TPqRH6aUK7t4aCtky2Y1pe7qkU7oWCYwSL_trc20': True,
+            'TUAZKEekUaRfyQ1HmunwQcDnBUJkYV1yrs_trc20': True}
 
 
 class BlocksDataHandler:
+
+    data_hashmap_obj = DataHashMap()
 
     @abstractmethod
     def get_blocks_wallets_data(self, blocks_data) -> dict: ...
@@ -17,32 +21,27 @@ class BlocksDataHandler:
     def _tx_wrapper(self, tx_id, tx, type_, timestamp) -> dict: ...
 
     @staticmethod
-    def check_is_exist_wallet(wallets_hashmap: dict, get_block_wallets_data: dict) -> list:
+    def check_is_exist_wallet(network_symbol: str, wallets_hashmap: dict, get_block_wallets_data: dict) -> list:
         our_wallets_list = []
         for key, value in get_block_wallets_data.items():
+            key = key + "_" + network_symbol
             if key in wallets_hashmap:
                 our_wallets_list.append(key)
         return our_wallets_list
 
-    @staticmethod
-    def check_contract_address_by_db(self, network_symbol: str, our_wallets_list: list, get_block_wallets_data: dict):
+    def add_transaction_to_waiting_queue(self, network_symbol: str, our_wallets_list: list, get_block_wallets_data: dict):
         for wallet in our_wallets_list:
+            wallet = wallet.split("_")[0]
             data = get_block_wallets_data[wallet]
             for tx in data:
                 tx_id = tx[0]
                 contract_address = tx[4]
-
-                state_ = check_contract_address_is_valid(network_symbol=network_symbol, contract_address=contract_address)
+                state_ = check_contract_address_is_valid(network_symbol=network_symbol,
+                                                         contract_address=contract_address)
                 if state_:
-                    DataHashMap.waiting_tx_queue[tx_id] = 1
-    def extract_data_for_our_wallet(self, our_wallets_list: list, get_block_wallets_data: dict) -> dict:
-        pass
-
-
-
-    # it's necessary to add status to our temporary table
-    def add_transaction_to_waiting_queue(self):
-        pass
+                    key = tx_id + "_" + network_symbol
+                    self.data_hashmap_obj.waiting_tx_queue_setter_by_value(key, tx)
+        print(self.data_hashmap_obj.waiting_tx_queue)
 
     def create_transaction(self):
         pass
@@ -94,10 +93,7 @@ class TRONDataHandler(BlocksDataHandler):
                 except:
                     pass
 
-            # Trc10 transactions
-            # case "TransferAssetContract":
-            #     pass
-
+            # todo Trc10 transactions case "TransferAssetContract"
             case _:
                 pass
 
@@ -118,11 +114,12 @@ class TRONDataHandler(BlocksDataHandler):
         return self._temp_get_block_wallets_data
 
 
-f = open("test1.json")
+f = open("test.json")
 blocks_dat = json.load(f)
 
 obj = TRONDataHandler()
 wallets_lst = obj.get_blocks_wallets_data(blocks_dat)
-print(obj.check_is_exist_wallet(wallets_hashmap=_wallets, get_block_wallets_data=wallets_lst))
+our_wallets_lst = obj.check_is_exist_wallet(network_symbol="trc20", wallets_hashmap=_wallets, get_block_wallets_data=wallets_lst)
+obj.add_transaction_to_waiting_queue("trc20", our_wallets_lst, wallets_lst)
 
 

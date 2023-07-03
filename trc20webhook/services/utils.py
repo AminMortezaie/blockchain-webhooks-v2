@@ -34,7 +34,7 @@ def get_coin(network: Network, contract_address: str) -> Coin | None:
         coin_obj = Coin.objects.get(network=network, contract_address=contract_address)
         return coin_obj
     except Coin.DoesNotExist:
-        pass
+        return None
 
 
 def get_block(network: Network) -> Block | None:
@@ -47,7 +47,10 @@ def get_block(network: Network) -> Block | None:
 
 def check_contract_address_is_valid(contract_address: str, network_symbol: str):
     network = get_network(network_symbol)
-    if Coin.objects.get(network=network, contract_address=contract_address):
-        return True
-    else:
+    try:
+        coin = get_coin(network, contract_address)
+        if coin:
+            return True
+    except Coin.DoesNotExist:
         return False
+
