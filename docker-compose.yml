@@ -29,6 +29,33 @@ services:
     networks:
       - my-network
 
+  celery:
+    build: .
+    command: celery -A webhook worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - beat
+    networks:
+      - my-network
+    restart: unless-stopped
+
+  beat:
+    build: .
+    command: celery -A webhook beat -l info
+    volumes:
+      - .:/code
+    networks:
+      - my-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    networks:
+      - my-network
+    mem_limit: 1024m
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 

@@ -150,9 +150,3 @@ class TRONDataHandler(BlocksDataHandler):
                 create_transaction(network_symbol=self._symbol, wallet_address=wallet_address,
                                    tx_hash=tx_hash, amount=amount, contract_address=contract_address,
                                    timestamp=timestamp, tx_type=tx_type)
-
-
-f = open("test.json")
-blocks_dat = json.load(f)
-
-TRONDataHandler(blocks_data=blocks_dat)

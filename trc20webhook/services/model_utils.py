@@ -10,6 +10,15 @@ def get_wallet(wallet_address: str, network: Network) -> Wallet | None:
         pass
 
 
+def get_all_wallets():
+    wallets_hashmap = {}
+    wallets = Wallet.objects.all()
+    for wallet in wallets:
+        key = wallet.address + "_" + wallet.network.symbol
+        wallets_hashmap[key] = True
+    return wallets_hashmap
+
+
 def get_network(network: str) -> Network | None:
     try:
         network_obj = Network.objects.get(symbol=network)
@@ -40,6 +49,12 @@ def get_block(network: Network) -> Block | None:
 def get_last_block_num_from_db(network: Network):
     block_obj = get_block(network=network)
     return block_obj.last_block_number
+
+
+def update_last_block_number(network: Network, last_block_number: str):
+    block_obj = get_block(network=network)
+    block_obj.last_block_number = last_block_number
+    block_obj.save()
 
 
 def check_contract_address_is_valid(contract_address: str, network_symbol: str):

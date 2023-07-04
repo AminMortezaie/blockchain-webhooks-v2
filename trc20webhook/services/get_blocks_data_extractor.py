@@ -17,7 +17,7 @@ def get_last_block_num_from_getblock(network: Network):
     return convert_hex_number_to_int(hex_result)
 
 
-def get_blocks(network: Network) -> dict:
+def get_blocks_(network: Network) -> tuple:
     network_name = network.symbol
     key = network_name + "-start-to-end"
     url = link_provider[key]
@@ -26,12 +26,12 @@ def get_blocks(network: Network) -> dict:
     end_number = get_last_block_num_from_getblock(network)
 
     payload_data = payload[key]
-    payload_data['startNum'] = start_number
+    payload_data['startNum'] = start_number - 10
     payload_data['endNum'] = end_number
 
     blocks_data = post_request_response(url, payload_data)
 
-    return blocks_data
+    return blocks_data, end_number
 
 
 def get_confirmation_state(network_symbol: str, tx_hash: str) -> dict:
