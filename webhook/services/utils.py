@@ -12,7 +12,7 @@ HEADERS = {
 
 
 def post_request_response(endpoint: str, payload: dict = None) -> dict:
-    response = requests.post(endpoint, json=payload)
+    response = requests.post(endpoint, json=payload, headers=HEADERS)
     if response.status_code == 200:
         data = response.json()
         return data
@@ -46,6 +46,11 @@ def add_value_to_dict_values_by_key(key: str, hashmap: dict, value: str | list |
     values = hashmap.get(key, [])
     values.append(value)
     hashmap[key] = values
+
+
+def return_tx_type(sender_address: str, wallet_address: str):
+    tx_type = 'withdrawal' if sender_address == wallet_address else 'deposit'
+    return tx_type
 
 
 

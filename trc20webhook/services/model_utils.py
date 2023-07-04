@@ -37,6 +37,11 @@ def get_block(network: Network) -> Block | None:
         raise "There is no block for this network."
 
 
+def get_last_block_num_from_db(network: Network):
+    block_obj = get_block(network=network)
+    return block_obj.last_block_number
+
+
 def check_contract_address_is_valid(contract_address: str, network_symbol: str):
     network = get_network(network_symbol)
     try:

@@ -1,9 +1,14 @@
 from webhook.services.singleton_pattern import SingletonMeta
-from trc20webhook.services.get_blocks_operators import add_value_to_dict_values_by_key
+from webhook.services.utils import add_value_to_dict_values_by_key
 
 
 class DataHashMap(metaclass=SingletonMeta):
-    _wallets_hashmap = {}
+    _wallets_hashmap = {'TAmSperixPEYyEVozADE6unuKuK44QSood_trc20': True,
+                        'TF4szfVCVQCC62L7G4M5yMA2nBRTGNko1r_trc20': True,
+                        'TWSTYpRKBzSZggfcesAQDJv6o2RMgVAvfi_trc20': True,
+                        'TPqRH6aUK7t4aCtky2Y1pe7qkU7oWCYwSL_trc20': True,
+                        'TUAZKEekUaRfyQ1HmunwQcDnBUJkYV1yrs_trc20': True}
+
     _waiting_tx_queue = {}
 
     @property

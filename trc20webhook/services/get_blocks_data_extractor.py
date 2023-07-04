@@ -1,14 +1,9 @@
-from trc20webhook.services.utils import get_wallet, get_network, get_coin, get_block
-from rest_framework import status
-from trc20webhook.models import TransactionHistory, Wallet, Network, Coin, Block
-from trc20webhook.services.get_blocks_operators import get_request_response, \
+from webhook.services.utils import get_request_response, \
     convert_hex_number_to_int, post_request_response
+
+from trc20webhook.services.model_utils import get_last_block_num_from_db
+from trc20webhook.models import Network
 from trc20webhook.services.get_blocks_links import link_provider, payload
-
-
-def get_last_block_num_from_db(network: Network):
-    block_obj = get_block(network=network)
-    return block_obj.last_block_number
 
 
 def get_last_block_num_from_getblock(network: Network):

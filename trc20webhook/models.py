@@ -70,6 +70,7 @@ class TransactionHistory(models.Model):
 
     class Meta:
         db_table = 'transaction_history_{wallet_id}'
+        unique_together = ('transaction_hash', 'network',)
 
 
 
