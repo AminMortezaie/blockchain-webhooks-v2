@@ -21,11 +21,16 @@ def debug_task(self):
 app.conf.beat_schedule = {
     'update_wallets_hashmap': {
         'task': 'update_wallets_hashmap',
-        'schedule': 500
+        'schedule': 120
     },
     'get_blocks_trc20': {
         'task': 'get_blocks_trc20',
-        'schedule': 30
+        'schedule': 40
     },
+    'tron_data_handler': {
+        'task': 'tron_data_handler',
+        'schedule': 5
+    }
+
 }
 

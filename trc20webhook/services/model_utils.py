@@ -1,6 +1,5 @@
 from trc20webhook.models import Wallet, Network, Coin, Block, TransactionHistory
-from datetime import datetime
-
+from webhook.services.utils import convert_timestamp
 
 def get_wallet(wallet_address: str, network: Network) -> Wallet | None:
     try:
@@ -71,7 +70,7 @@ def create_transaction(network_symbol: str, wallet_address: str, tx_hash: str, a
                        contract_address: str, timestamp: str, tx_type: str):
     network = get_network(network_symbol)
     coin = get_coin(network, contract_address)
-    timestamp = datetime.fromtimestamp(int(timestamp))
+    timestamp = convert_timestamp(timestamp)
     wallet = get_wallet(wallet_address=wallet_address, network=network)
     amount = float(amount) / float(pow(10, int(coin.decimals)))
 

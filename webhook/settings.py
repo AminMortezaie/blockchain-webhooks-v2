@@ -13,9 +13,17 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from webhook.environments import *
 from celery.schedules import crontab
+import logging
+import warnings
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# logging.getLogger('celery').setLevel(logging.ERROR)
+# warnings.filterwarnings('ignore', category=UserWarning)
+
+# SILENCED_SYSTEM_CHECKS = ['models.W001']
 
 CELERY_BROKER_URL = 'redis://redis:6379/1'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
@@ -23,6 +31,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+# CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
 
 CELERY_CONFIG = {
     'broker_transport_options': {'visibility_timeout': 3600 * 10},

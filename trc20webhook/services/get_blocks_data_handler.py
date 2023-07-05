@@ -1,4 +1,5 @@
-from webhook.services.utils import convert_hex_number_to_int, add_value_to_dict_values_by_key, return_tx_type
+from webhook.services.utils import convert_hex_number_to_int, \
+    add_value_to_dict_values_by_key, return_tx_type, del_pair_from_dict_by_key
 
 from trc20webhook.services.model_utils import check_contract_address_is_valid, create_transaction
 from trc20webhook.services.get_blocks_data_extractor import get_confirmation_state
@@ -62,7 +63,8 @@ class TRONDataHandler(BlocksDataHandler):
     _symbol = "trc20"
     _temp_get_block_wallets_data = {}
 
-    def __init__(self, blocks_data):
+    def __init__(self):
+        blocks_data = self.data_hashmap_obj.tron_blocks_data
         self.get_blocks_wallets_data(blocks_data)
         our_wallets_list = self.check_is_exist_wallet(network_symbol=self._symbol,
                                                       wallets_hashmap=self.data_hashmap_obj.wallets_hashmap,
@@ -116,7 +118,9 @@ class TRONDataHandler(BlocksDataHandler):
                 pass
 
     def get_blocks_wallets_data(self, blocks_data) -> None:
-        for block_data in blocks_data['block']:
+        should_remove_keys = []
+        for key, block_data in blocks_data.items():
+            block_data = block_data[0]
             block_timestamp = int(int(block_data['block_header']['raw_data']['timestamp']) / pow(10, 3))
             for tx in block_data['transactions']:
                 type_ = tx['raw_data']['contract'][0]['type']
@@ -130,10 +134,15 @@ class TRONDataHandler(BlocksDataHandler):
                     add_value_to_dict_values_by_key(sender_address, self._temp_get_block_wallets_data, tx_data)
                     add_value_to_dict_values_by_key(receiver_address, self._temp_get_block_wallets_data, tx_data)
 
+            should_remove_keys.append(key)
+        del_pair_from_dict_by_key(should_remove_keys, self.data_hashmap_obj.tron_blocks_data)
+
     def check_for_confirmed_txs(self, waiting_queue_txs: dict):
+        should_remove_keys = []
+        # print(waiting_queue_txs)
         for key, value in waiting_queue_txs.items():
             tx_hash = key.split("_")[0]
-            print(get_confirmation_state(network_symbol=self._symbol, tx_hash=tx_hash)['confirmed'])
+            # print(get_confirmation_state(network_symbol=self._symbol, tx_hash=tx_hash)['confirmed'])
             if get_confirmation_state(network_symbol=self._symbol, tx_hash=tx_hash)['confirmed']:
                 tx_hash = value[0][0]
                 tx_type = value[0][6]
@@ -150,3 +159,7 @@ class TRONDataHandler(BlocksDataHandler):
                 create_transaction(network_symbol=self._symbol, wallet_address=wallet_address,
                                    tx_hash=tx_hash, amount=amount, contract_address=contract_address,
                                    timestamp=timestamp, tx_type=tx_type)
+
+                should_remove_keys.append(key)
+
+        del_pair_from_dict_by_key(should_remove_keys, self.data_hashmap_obj.waiting_tx_queue)

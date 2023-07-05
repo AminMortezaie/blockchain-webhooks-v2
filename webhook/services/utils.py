@@ -12,7 +12,7 @@ HEADERS = {
 
 
 def post_request_response(endpoint: str, payload: dict = None) -> dict:
-    response = requests.post(endpoint, json=payload, headers=HEADERS)
+    response = requests.post(endpoint, json=payload, headers=HEADERS, timeout=300)
     if response.status_code == 200:
         data = response.json()
         return data
@@ -53,9 +53,6 @@ def return_tx_type(sender_address: str, wallet_address: str):
     return tx_type
 
 
-
-
-
-
-
-
+def del_pair_from_dict_by_key(removable_lst: list, hashmap: dict) -> None:
+    for removable_key in removable_lst:
+        del hashmap[removable_key]

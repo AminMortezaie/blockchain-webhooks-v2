@@ -3,13 +3,10 @@ from webhook.services.utils import add_value_to_dict_values_by_key
 
 
 class DataHashMap(metaclass=SingletonMeta):
-    _wallets_hashmap = {'TAmSperixPEYyEVozADE6unuKuK44QSood_trc20': True,
-                        'TF4szfVCVQCC62L7G4M5yMA2nBRTGNko1r_trc20': True,
-                        'TWSTYpRKBzSZggfcesAQDJv6o2RMgVAvfi_trc20': True,
-                        'TPqRH6aUK7t4aCtky2Y1pe7qkU7oWCYwSL_trc20': True,
-                        'TUAZKEekUaRfyQ1HmunwQcDnBUJkYV1yrs_trc20': True}
-
+    _wallets_hashmap = {"TUAZKEekUaRfyQ1HmunwQcDnBUJkYV1yrs_trc20": True}
+    # _wallets_hashmap = {}
     _waiting_tx_queue = {}
+    _tron_blocks_data = {}
 
     @property
     def wallets_hashmap(self):
@@ -29,3 +26,10 @@ class DataHashMap(metaclass=SingletonMeta):
 
     def waiting_tx_queue_setter_by_value(self, key, value):
         add_value_to_dict_values_by_key(key, self._waiting_tx_queue, value)
+
+    @property
+    def tron_blocks_data(self):
+        return self._tron_blocks_data
+
+    def tron_blocks_data_setter_by_value(self, key, value):
+        add_value_to_dict_values_by_key(key, self._tron_blocks_data, value)

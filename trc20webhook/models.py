@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.admin import User
+from django.db import IntegrityError
 from datetime import datetime
 import base58
 
@@ -71,6 +72,16 @@ class TransactionHistory(models.Model):
     class Meta:
         db_table = 'transaction_history_{wallet_id}'
         unique_together = ('transaction_hash', 'network',)
+
+    def save(self, *args, **kwargs):
+        try:
+            super().save(*args, **kwargs)
+        except Exception as e:
+            pass
+
+    def __str__(self):
+        return self.transaction_hash
+
 
 
 

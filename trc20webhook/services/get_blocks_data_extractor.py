@@ -4,6 +4,9 @@ from webhook.services.utils import get_request_response, \
 from trc20webhook.services.model_utils import get_last_block_num_from_db
 from trc20webhook.models import Network
 from trc20webhook.services.get_blocks_links import link_provider, payload
+from trc20webhook.services.data_hashmap import DataHashMap
+
+data_hashmap_obj = DataHashMap()
 
 
 def get_last_block_num_from_getblock(network: Network):
@@ -26,10 +29,16 @@ def get_blocks_(network: Network) -> tuple:
     end_number = get_last_block_num_from_getblock(network)
 
     payload_data = payload[key]
-    payload_data['startNum'] = start_number - 10
+    payload_data['startNum'] = start_number
     payload_data['endNum'] = end_number
 
     blocks_data = post_request_response(url, payload_data)
+    # todo shahab bad pattern!!!
+    for block_data in blocks_data['block']:
+        block_number = block_data['block_header']['raw_data']['number']
+        data_hashmap_obj.tron_blocks_data_setter_by_value(block_number, block_data)
+        for key, value in data_hashmap_obj.tron_blocks_data.items():
+            print(key)
 
     return blocks_data, end_number
 
