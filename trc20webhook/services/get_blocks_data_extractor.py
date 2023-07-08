@@ -36,9 +36,12 @@ def get_blocks_(network: Network) -> tuple:
     # todo shahab bad pattern!!!
     for block_data in blocks_data['block']:
         block_number = block_data['block_header']['raw_data']['number']
+        print('data to add ::: block_number:::', block_number)
         data_hashmap_obj.tron_blocks_data_setter_by_value(block_number, block_data)
-        for key, value in data_hashmap_obj.tron_blocks_data.items():
-            print(key)
+    print("tron block data :::")
+    print(data_hashmap_obj.tron_blocks_data.keys())
+    # for key, value in data_hashmap_obj.tron_blocks_data.items():
+    #     print(key)
 
     return blocks_data, end_number
 

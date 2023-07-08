@@ -29,7 +29,7 @@ app.conf.beat_schedule = {
     },
     'tron_data_handler': {
         'task': 'tron_data_handler',
-        'schedule': 5
+        'schedule': 100
     }
 
 }

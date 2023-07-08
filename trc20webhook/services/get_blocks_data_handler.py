@@ -65,6 +65,7 @@ class TRONDataHandler(BlocksDataHandler):
 
     def __init__(self):
         blocks_data = self.data_hashmap_obj.tron_blocks_data
+        print("inside tron handler:::", self.data_hashmap_obj.tron_blocks_data.keys())
         self.get_blocks_wallets_data(blocks_data)
         our_wallets_list = self.check_is_exist_wallet(network_symbol=self._symbol,
                                                       wallets_hashmap=self.data_hashmap_obj.wallets_hashmap,
