@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from webhook.environments import *
 from celery.schedules import crontab
@@ -32,6 +32,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 # CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
+
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = os.getenv('RABBITMQ_PORT', '5672')
+RABBITMQ_USERNAME = os.getenv('RABBITMQ_USERNAME', 'user')
+RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASSWORD', 'password')
 
 CELERY_CONFIG = {
     'broker_transport_options': {'visibility_timeout': 3600 * 10},
