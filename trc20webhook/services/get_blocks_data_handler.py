@@ -18,11 +18,11 @@ class BlocksDataHandler:
         ...
 
     @abstractmethod
-    def _tx_wrapper(self, tx_id, tx, type_, timestamp) -> dict:
+    def _tx_wrapper(self, tx_id, tx, type_, timestamp, block_number) -> dict:
         ...
 
-    @staticmethod
-    def check_is_exist_wallet(network_symbol: str, wallets_hashmap: dict, get_block_wallets_data: dict) -> list:
+    def check_is_exist_wallet(self, network_symbol: str, get_block_wallets_data: dict) -> list:
+        wallets_hashmap = self.data_hashmap_obj.wallets_hashmap
         our_wallets_list = []
         for key, value in get_block_wallets_data.items():
             key = key + "_" + network_symbol
@@ -68,7 +68,6 @@ class TRONDataHandler(BlocksDataHandler):
         print("inside tron handler:::", self.data_hashmap_obj.tron_blocks_data.keys())
         self.get_blocks_wallets_data(blocks_data)
         our_wallets_list = self.check_is_exist_wallet(network_symbol=self._symbol,
-                                                      wallets_hashmap=self.data_hashmap_obj.wallets_hashmap,
                                                       get_block_wallets_data=self._temp_get_block_wallets_data)
         self.add_transaction_to_waiting_queue(network_symbol=self._symbol,
                                               our_wallets_list=our_wallets_list,
@@ -96,7 +95,7 @@ class TRONDataHandler(BlocksDataHandler):
         except Exception as e:
             print(e)
 
-    def _tx_wrapper(self, tx_id, tx, type_, timestamp):
+    def _tx_wrapper(self, tx_id, tx, type_, timestamp, block_number):
         match type_:
             # This is pure TRX transfer
             case "TransferContract":
@@ -104,13 +103,13 @@ class TRONDataHandler(BlocksDataHandler):
                 amount = tx['amount']
                 sender_address = self._convert_hex_to_base58_address(tx['owner_address'])
                 receiver_address = self._convert_hex_to_base58_address(tx['to_address'])
-                return [tx_id, sender_address, receiver_address, amount, contract_address, timestamp]
+                return [tx_id, sender_address, receiver_address, amount, contract_address, timestamp, block_number]
 
             case "TriggerSmartContract":
                 contract_address = self._convert_hex_to_base58_address(tx['contract_address'])
                 try:
                     sender_address, receiver_address, amount = self._wrap_inside_contract_data(tx)
-                    return [tx_id, sender_address, receiver_address, amount, contract_address, timestamp]
+                    return [tx_id, sender_address, receiver_address, amount, contract_address, timestamp, block_number]
                 except:
                     pass
 
@@ -127,8 +126,9 @@ class TRONDataHandler(BlocksDataHandler):
                 type_ = tx['raw_data']['contract'][0]['type']
                 transaction = tx['raw_data']['contract'][0]['parameter']['value']
                 tx_id = tx['txID']
+                block_number = key
 
-                tx_data = self._tx_wrapper(tx_id, transaction, type_, block_timestamp)
+                tx_data = self._tx_wrapper(tx_id, transaction, type_, block_timestamp, block_number)
                 if tx_data:
                     sender_address = tx_data[1]
                     receiver_address = tx_data[2]
@@ -140,13 +140,11 @@ class TRONDataHandler(BlocksDataHandler):
 
     def check_for_confirmed_txs(self, waiting_queue_txs: dict):
         should_remove_keys = []
-        # print(waiting_queue_txs)
         for key, value in waiting_queue_txs.items():
             tx_hash = key.split("_")[0]
-            # print(get_confirmation_state(network_symbol=self._symbol, tx_hash=tx_hash)['confirmed'])
             if get_confirmation_state(network_symbol=self._symbol, tx_hash=tx_hash)['confirmed']:
                 tx_hash = value[0][0]
-                tx_type = value[0][6]
+                tx_type = value[0][7]
 
                 if tx_type == "withdrawal":
                     wallet_address = value[0][1]
@@ -156,10 +154,11 @@ class TRONDataHandler(BlocksDataHandler):
                 amount = value[0][3]
                 contract_address = value[0][4]
                 timestamp = value[0][5]
+                block_number = value[0][6]
 
                 create_transaction(network_symbol=self._symbol, wallet_address=wallet_address,
                                    tx_hash=tx_hash, amount=amount, contract_address=contract_address,
-                                   timestamp=timestamp, tx_type=tx_type)
+                                   timestamp=timestamp, tx_type=tx_type, block_number=block_number)
 
                 should_remove_keys.append(key)
 

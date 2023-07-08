@@ -21,7 +21,7 @@ def debug_task(self):
 app.conf.beat_schedule = {
     'update_wallets_hashmap': {
         'task': 'update_wallets_hashmap',
-        'schedule': 120
+        'schedule': 100
     },
     'get_blocks_trc20': {
         'task': 'get_blocks_trc20',

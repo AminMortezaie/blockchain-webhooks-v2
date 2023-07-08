@@ -60,6 +60,7 @@ class Block(models.Model):
 
 
 class TransactionHistory(models.Model):
+    block_number = models.CharField(max_length=100, null=True)
     transaction_hash = models.CharField(max_length=100)
     amount = models.CharField(max_length=50)
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
@@ -70,7 +71,7 @@ class TransactionHistory(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'transaction_history_{wallet_id}'
+        # db_table = 'transaction_history_{wallet_id}'
         unique_together = ('transaction_hash', 'network',)
 
     def save(self, *args, **kwargs):

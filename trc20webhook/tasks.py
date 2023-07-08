@@ -14,17 +14,9 @@ def update_wallets_hashmap():
 
 @shared_task(name="get_blocks_trc20")
 def get_blocks_trc20():
-    lock_id = "get_blocks_trc20"
-    acquire_lock = lambda: cache.add(lock_id, "true", 60 * 5)
-    release_lock = lambda: cache.delete(lock_id)
-    if acquire_lock():
-        try:
-            network = get_network("trc20")
-            blocks_data, last_block_number = get_blocks_(network)
-            update_last_block_number(network=network, last_block_number=last_block_number)
-            cache.delete(f'transactions_{network}')
-        finally:
-            release_lock()
+    network = get_network("trc20")
+    blocks_data, last_block_number = get_blocks_(network)
+    update_last_block_number(network=network, last_block_number=last_block_number)
 
 
 @shared_task(name='tron_data_handler')

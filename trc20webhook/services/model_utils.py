@@ -67,7 +67,7 @@ def check_contract_address_is_valid(contract_address: str, network_symbol: str):
 
 
 def create_transaction(network_symbol: str, wallet_address: str, tx_hash: str, amount: str,
-                       contract_address: str, timestamp: str, tx_type: str):
+                       contract_address: str, timestamp: str, tx_type: str, block_number: str):
     network = get_network(network_symbol)
     coin = get_coin(network, contract_address)
     timestamp = convert_timestamp(timestamp)
@@ -77,6 +77,6 @@ def create_transaction(network_symbol: str, wallet_address: str, tx_hash: str, a
     try:
         TransactionHistory.objects.create(transaction_hash=tx_hash, amount=amount,
                                           coin=coin, network=network, wallet=wallet,
-                                          transaction_type=tx_type, timestamp=timestamp)
+                                          transaction_type=tx_type, timestamp=timestamp, block_number=block_number)
     except Exception as e:
         print(e)

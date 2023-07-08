@@ -3,8 +3,7 @@ from webhook.services.utils import add_value_to_dict_values_by_key
 
 
 class DataHashMap(metaclass=SingletonMeta):
-    _wallets_hashmap = {"TUAZKEekUaRfyQ1HmunwQcDnBUJkYV1yrs_trc20": True}
-    # _wallets_hashmap = {}
+    _wallets_hashmap = {}
     _waiting_tx_queue = {}
     _tron_blocks_data = {}
 
